@@ -59,6 +59,7 @@ u8 USART_VidReceiveStringSynch(u8 *Copy_u8String);
 
 u8 USART_VidReceiveStringAsynch(u8 *Copy_u8String, void (*Callback)(void));
 
+u8 USART_u8SendNewLine() ;
 
 
 #endif /* USART_INTERFACE_H */

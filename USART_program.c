@@ -289,6 +289,7 @@ u8 USART_VidSendStringSynch(u8 *Copy_u8String)
             /* Increment the string pointer */
             Copy_u8String++;
         }
+        // Send newline character after sending the string
     }
 
     else
@@ -526,5 +527,17 @@ void __vector_14(void)
 void __vector_15(void)
 {
     /* Do nothing */
+}
+
+
+u8 USART_u8SendNewLine() {
+    // Send carriage return character over USART
+    u8 status = USART_u8SendByte('\r');
+    if (status != OK) {
+        return status; // Return if sending carriage return fails
+    }
+
+    // Send newline character over USART
+    return USART_u8SendByte('\n');
 }
 

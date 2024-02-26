@@ -16,8 +16,6 @@
 
 #include "APP.h"
 
-
-
 void main(void) {
 	u8 Number = 0, data;
 
@@ -31,62 +29,94 @@ void main(void) {
 
 	// Perform login
 	APP_voidLogin();
+	USART_u8SendNewLine();
+
+	USART_VidSendStringSynch("Choose an option:\n");
+	USART_u8SendNewLine();
+
+	sendOptions(); // Send the list of options
+	USART_u8SendNewLine();
 
 	// Main loop
 	while (1) {
-		// Check if data is received from USART
-		if (USART_u8ReceiveByte(&data) == OK) {
-			Number = data; // Assign received data to Number
+		// Send options to the user
 
-			// Process the received number
-			switch (Number) {
-			case '1':
-				// LED array port
-				DIO_u8SetPortValue(DIO_u8PORTC, DIO_u8PORT_HIGH);
-				USART_VidReceiveStringSynch("LED ON \n");	// send status of LED (LED ON)
+		APP_voidDisplayDashboard() ;
 
-				break;
-			case '2':
-				// LED array port
-				DIO_u8SetPortValue(DIO_u8PORTC, DIO_u8PORT_LOW);
-				CLCD_voidSendString("LEDS OFF ");
-				_delay_ms(500);
-				break;
-			case '3':
-				APP_voidControlLight();
-				break;
-			case '4':
-				APP_voidOpenDoor();
-				CLCD_voidSendString("DOOR OPEN ");
-				_delay_ms(500);
-				break;
-			case '5':
-				APP_voidCloseDoor();
-				CLCD_voidSendString("DOOR CLOSE ");
-				_delay_ms(500);
-				break;
-			case '6':
-				// DC motor control pin
-				DIO_u8SetPinValue(DIO_u8PORTB, DIO_u8PIN3, DIO_u8PIN_HIGH);
-				CLCD_voidSendString("FAN ON ");
-				_delay_ms(500);
-				break;
-			case '7':
-				// DC motor control pin
-				DIO_u8SetPinValue(DIO_u8PORTB, DIO_u8PIN3, DIO_u8PIN_LOW);
-				CLCD_voidSendString("FAN OFF ");
-				_delay_ms(500);
-				break;
-			case '8':
-				APP_voidControlFanSpeed();
-				break;
-			case '9':
-				play_tone(262, 500);
-				_delay_ms(100); // Delay between tones
-				break;
-			default:
-				break;
-			}
+		// Wait for user input
+		while (USART_u8ReceiveByte(&data) != OK); // Wait until valid data is received
+
+		Number = data; // Assign received data to Number
+
+		// Process the received number
+		switch (Number) {
+		case '1':
+			// LED array port
+			DIO_u8SetPortValue(DIO_u8PORTC, DIO_u8PORT_HIGH);
+			USART_VidSendStringSynch("LED ON \n");  // send status of LED (LED ON)
+			USART_u8SendNewLine();
+
+			break;
+		case '2':
+			// LED array port
+			DIO_u8SetPortValue(DIO_u8PORTC, DIO_u8PORT_LOW);
+			USART_VidSendStringSynch("LED OFF \n");
+			USART_u8SendNewLine();
+
+			break;
+		case '3':
+			APP_voidControlLight();
+			USART_VidSendStringSynch("LEDS UNDER CONTROL \n");
+			USART_u8SendNewLine();
+
+			break;
+		case '4':
+			APP_voidOpenDoor();
+			USART_VidSendStringSynch("DOOR OPEN  \n");
+			USART_u8SendNewLine();
+
+			break;
+		case '5':
+			APP_voidCloseDoor();
+			USART_VidSendStringSynch("DOOR CLOSE \n");
+			USART_u8SendNewLine();
+
+			break;
+		case '6':
+			// DC motor control pin
+			DIO_u8SetPinValue(DIO_u8PORTD, DIO_u8PIN3, DIO_u8PIN_HIGH);
+			USART_VidSendStringSynch("FAN ON \n");
+			USART_u8SendNewLine();
+
+			break;
+		case '7':
+			// DC motor control pin
+			DIO_u8SetPinValue(DIO_u8PORTD, DIO_u8PIN3, DIO_u8PIN_LOW);
+			USART_VidSendStringSynch("FAN OFF \n");
+			USART_u8SendNewLine();
+
+			break;
+		case '8':
+			APP_voidControlFanSpeed();
+			USART_VidSendStringSynch("FAN control With TEMP \n");
+			USART_u8SendNewLine();
+
+			break;
+		case '9':
+			play_tone(262, 500);
+			_delay_ms(100); // Delay between tones
+			USART_VidSendStringSynch("MUSIC ON \n");
+			USART_u8SendNewLine();
+
+			break;
+		case '0':
+			// Do nothing, as the options are already sent
+			break;
+		default:
+			USART_VidSendStringSynch("Invalid option, please try again\n");
+			USART_u8SendNewLine();
+
+			break;
 		}
 	}
 }
